@@ -28,7 +28,7 @@ export class TasksService {
 
   createTask(title: string, description: string): Task {
     const task: Task = {
-      id: Math.random().toString(),
+      id: (this.tasks.length + 1).toString(),
       title,
       description,
       status: TaskStatus.PENDING,
