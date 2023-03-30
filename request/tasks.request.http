@@ -1,0 +1,11 @@
+### Send POST request with json body
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "title": "My first task",
+  "description": "This is my first task"
+}
+
+### Send GET request
+GET http://localhost:3000/tasks
