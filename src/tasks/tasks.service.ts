@@ -10,6 +10,12 @@ export class TasksService {
       description: 'Description 1',
       status: TaskStatus.PENDING,
     },
+    {
+      id: '2',
+      title: 'Task 2',
+      description: 'Description 2',
+      status: TaskStatus.IN_PROGRESS,
+    },
   ];
 
   getAllTasks(): Task[] {
