@@ -23,3 +23,7 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## Issues
+> [!WARNING]
+> Para utilizar lowdb, se debe instalar la versión 1.0.0 de lowdb, ya que la versión 2.0.0 no es compatible con NestJS.
