@@ -16,10 +16,15 @@ export class DbService implements OnModuleInit {
   }
 
   private async initDatabase(): Promise<void> {
-    const adapter = new FileAsync<Schema>('db.json');
-    this.db = await lowdb(adapter);
-    if (!(await this.db.get('tasks').value())) {
-      this.db.set('tasks', []).write();
+    try {
+      const adapter = new FileAsync<Schema>('db.json');
+      this.db = await lowdb(adapter);
+      if (!(await this.db.get('tasks').value())) {
+        this.db.set('tasks', []).write();
+      }
+    } catch (error) {
+      console.log(error);
+      new Error('Error initializing database');
     }
   }
 

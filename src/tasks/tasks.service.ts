@@ -3,15 +3,10 @@ import { Task, TaskStatus } from './task.entity';
 import { DbService } from 'src/db/db.service';
 import { v4 as uuid } from 'uuid';
 
-export type SuccessResponse = {
+export type Response = {
   success: boolean;
   message: string;
   data?: any;
-};
-
-export type ErrorResponse = {
-  success: boolean;
-  message: string;
   error?: any;
 };
 
@@ -20,80 +15,95 @@ export class TasksService {
   constructor(private readonly dbService: DbService) {}
 
   public getAllTasks(): Task[] {
-    return this.dbService.getDatabase().get('tasks').value();
+    try {
+      return this.dbService.getDatabase().get('tasks').value();
+    } catch (error) {
+      console.log(error);
+      new Error('Error retrieving tasks');
+    }
   }
 
   public getTaskById(id: string): Task {
-    return this.dbService.getDatabase().get('tasks').find({ id }).value();
-  }
-
-  public createTask(
-    title: string,
-    description: string,
-  ): SuccessResponse | ErrorResponse {
-    const task = {
-      id: uuid(),
-      title,
-      description,
-      status: TaskStatus.TODO,
-    };
-
     try {
-      this.dbService.getDatabase().get('tasks').push(task).write();
+      return this.dbService.getDatabase().get('tasks').find({ id }).value();
     } catch (error) {
       console.log(error);
-      return { success: false, message: 'Error creating task', error };
+      new Error('Error retrieving task');
     }
+  }
 
-    return { success: true, message: 'Task created successfully', data: task };
+  public createTask(title: string, description: string): Task {
+    try {
+      const task = {
+        id: uuid(),
+        title,
+        description,
+        status: TaskStatus.TODO,
+      };
+
+      this.dbService.getDatabase().get('tasks').push(task).write();
+
+      return task;
+    } catch (error) {
+      console.log(error);
+      new Error('Error creating task');
+    }
   }
 
   public updateTaskStatus(id: string, status: TaskStatus): Task {
-    const taskToUpdate = this.dbService
-      .getDatabase()
-      .get('tasks')
-      .find({ id })
-      .value();
+    try {
+      const task: Task = this.dbService
+        .getDatabase()
+        .get('tasks')
+        .find({ id })
+        .value();
 
-    taskToUpdate.status = status;
+      task.status = status;
 
-    this.dbService.getDatabase().write();
+      this.dbService.getDatabase().write();
 
-    return taskToUpdate;
+      return task;
+    } catch (error) {
+      console.log(error);
+      new Error('Error updating task status');
+    }
   }
 
   public updateTask(id: string, task: Task): Task {
-    const taskToUpdate = this.dbService
-      .getDatabase()
-      .get('tasks')
-      .find({ id })
-      .value();
+    try {
+      const _task = this.dbService
+        .getDatabase()
+        .get('tasks')
+        .find({ id })
+        .value();
 
-    taskToUpdate.title = task.title;
-    taskToUpdate.description = task.description;
-    taskToUpdate.status = task.status;
+      _task.title = task.title;
+      _task.description = task.description;
+      _task.status = task.status;
 
-    this.dbService.getDatabase().write();
+      this.dbService.getDatabase().write();
 
-    return taskToUpdate;
+      return _task;
+    } catch (error) {
+      console.log(error);
+      new Error('Error updating task');
+    }
   }
 
-  public deleteTask(id: string): Task | ErrorResponse {
-    const taskToDelete = this.dbService
-      .getDatabase()
-      .get('tasks')
-      .find({ id })
-      .value();
+  public deleteTask(id: string): Task {
+    try {
+      const task = this.dbService
+        .getDatabase()
+        .get('tasks')
+        .find({ id })
+        .value();
 
-    if (!taskToDelete) {
-      return {
-        success: false,
-        message: 'Task not found',
-      };
+      this.dbService.getDatabase().get('tasks').remove({ id }).write();
+
+      return task;
+    } catch (error) {
+      console.log(error);
+      new Error('Error deleting task');
     }
-
-    this.dbService.getDatabase().get('tasks').remove({ id }).write();
-
-    return taskToDelete;
   }
 }

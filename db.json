@@ -1,30 +1,6 @@
 {
   "tasks": [
     {
-      "id": "b411ea5d-84b8-4f12-a08a-9b8a52d627df",
-      "title": "My first task",
-      "description": "This is my first task",
-      "status": "To do"
-    },
-    {
-      "id": "510cebbc-6b9b-4e8a-994e-f39820e5dd7c",
-      "title": "My first task",
-      "description": "This is my first task",
-      "status": "To do"
-    },
-    {
-      "id": "d01eca5b-b7ea-4126-ba05-2fb78ac0bc20",
-      "title": "My first task",
-      "description": "This is my first task",
-      "status": "To do"
-    },
-    {
-      "id": "65c375e4-d64d-4a26-b980-8b289acb0f22",
-      "title": "My first task",
-      "description": "This is my first task",
-      "status": "To do"
-    },
-    {
       "id": "53f0abbf-d78b-4d20-9acc-79984924a587",
       "title": "Hi!",
       "description": "This is my first task",
