@@ -9,7 +9,7 @@ POST http://localhost:3000/tasks
 Content-Type: application/json
 
 {
-  "title": "My first task",
+  "title": "Hi!",
   "description": "This is my first task"
 }
 
