@@ -1,50 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { Task, TaskStatus } from './task.entity';
-import * as lowdb from 'lowdb';
-import * as FileAsync from 'lowdb/adapters/FileAsync';
-
-class Schema {
-  tasks: Task[];
-}
+import { DbService } from 'src/db/db.service';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class TasksService {
-  private db: lowdb.LowdbAsync<any>;
+  constructor(private readonly dbService: DbService) {}
 
-  constructor() {
-    this.initDatabase();
+  public getAllTasks(): Task[] {
+    return this.dbService.getDatabase().get('tasks').value();
   }
 
-  private async initDatabase(): Promise<void> {
-    const adapter = new FileAsync<Schema>('db.json');
-    this.db = await lowdb(adapter);
-    if (!(await this.db.get('tasks').value())) {
-      this.db.set('tasks', []).write();
-    }
-  }
-
-  getAllTasks(): any {
-    const tasks: Task[] = this.db.get('tasks').value();
-    return tasks;
-  }
-
-  getTaskById(id: string): Task {
-    return null;
+  public getTaskById(id: string): Task {
+    return this.dbService.getDatabase().get('tasks').find({ id }).value();
   }
 
   createTask(title: string, description: string): Task {
     const task = {
-      id: '1',
+      id: uuid(),
       title,
       description,
       status: TaskStatus.TODO,
     };
 
-    const tasks = this.db.get('tasks');
+    const result = this.dbService.getDatabase().get('tasks').push(task).write();
 
-    tasks.push(task).write();
+    console.log('createTask', result);
 
-    return null;
+    return task;
   }
 
   updateTaskStatus(id: string, status: TaskStatus): Task {
