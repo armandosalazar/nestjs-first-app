@@ -1,41 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { Task, TaskStatus } from './task.entity';
+import * as lowdb from 'lowdb';
+import * as FileAsync from 'lowdb/adapters/FileAsync';
+
+class Schema {
+  tasks: Task[];
+}
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [
-    {
-      id: '1',
-      title: 'Task 1',
-      description: 'Description 1',
-      status: TaskStatus.PENDING,
-    },
-    {
-      id: '2',
-      title: 'Task 2',
-      description: 'Description 2',
-      status: TaskStatus.IN_PROGRESS,
-    },
-  ];
+  private db: lowdb.LowdbAsync<any>;
 
-  getAllTasks(): Task[] {
-    return this.tasks;
+  constructor() {
+    this.initDatabase();
+  }
+
+  private async initDatabase(): Promise<void> {
+    const adapter = new FileAsync<Schema>('db.json');
+    this.db = await lowdb(adapter);
+    if (!(await this.db.get('tasks').value())) {
+      this.db.set('tasks', []).write();
+    }
+  }
+
+  getAllTasks(): any {
+    const tasks: Task[] = this.db.get('tasks').value();
+    return tasks;
   }
 
   getTaskById(id: string): Task {
-    return this.tasks.find((task) => task.id === id);
+    return null;
   }
 
   createTask(title: string, description: string): Task {
-    const task: Task = {
-      id: (this.tasks.length + 1).toString(),
+    const task = {
+      id: '1',
       title,
       description,
-      status: TaskStatus.PENDING,
+      status: TaskStatus.TODO,
     };
 
-    this.tasks.push(task);
-    return task;
+    const tasks = this.db.get('tasks');
+
+    tasks.push(task).write();
+
+    return null;
   }
 
   updateTaskStatus(id: string, status: TaskStatus): Task {
@@ -44,7 +53,14 @@ export class TasksService {
     return task;
   }
 
+  updateTask(id: string, task: Task): Task {
+    const taskToUpdate = this.getTaskById(id);
+    taskToUpdate.title = task.title;
+    taskToUpdate.description = task.description;
+    return taskToUpdate;
+  }
+
   deleteTask(id: string): void {
-    this.tasks = this.tasks.filter((task) => task.id !== id);
+    console.log('deleteTask', id);
   }
 }
