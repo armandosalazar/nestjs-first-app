@@ -3,6 +3,18 @@ import { Task, TaskStatus } from './task.entity';
 import { DbService } from 'src/db/db.service';
 import { v4 as uuid } from 'uuid';
 
+export type SuccessResponse = {
+  success: boolean;
+  message: string;
+  data?: any;
+};
+
+export type ErrorResponse = {
+  success: boolean;
+  message: string;
+  error?: any;
+};
+
 @Injectable()
 export class TasksService {
   constructor(private readonly dbService: DbService) {}
@@ -15,7 +27,10 @@ export class TasksService {
     return this.dbService.getDatabase().get('tasks').find({ id }).value();
   }
 
-  createTask(title: string, description: string): Task {
+  public createTask(
+    title: string,
+    description: string,
+  ): SuccessResponse | ErrorResponse {
     const task = {
       id: uuid(),
       title,
@@ -23,27 +38,62 @@ export class TasksService {
       status: TaskStatus.TODO,
     };
 
-    const result = this.dbService.getDatabase().get('tasks').push(task).write();
+    try {
+      this.dbService.getDatabase().get('tasks').push(task).write();
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: 'Error creating task', error };
+    }
 
-    console.log('createTask', result);
-
-    return task;
+    return { success: true, message: 'Task created successfully', data: task };
   }
 
-  updateTaskStatus(id: string, status: TaskStatus): Task {
-    const task = this.getTaskById(id);
-    task.status = status;
-    return task;
-  }
+  public updateTaskStatus(id: string, status: TaskStatus): Task {
+    const taskToUpdate = this.dbService
+      .getDatabase()
+      .get('tasks')
+      .find({ id })
+      .value();
 
-  updateTask(id: string, task: Task): Task {
-    const taskToUpdate = this.getTaskById(id);
-    taskToUpdate.title = task.title;
-    taskToUpdate.description = task.description;
+    taskToUpdate.status = status;
+
+    this.dbService.getDatabase().write();
+
     return taskToUpdate;
   }
 
-  deleteTask(id: string): void {
-    console.log('deleteTask', id);
+  public updateTask(id: string, task: Task): Task {
+    const taskToUpdate = this.dbService
+      .getDatabase()
+      .get('tasks')
+      .find({ id })
+      .value();
+
+    taskToUpdate.title = task.title;
+    taskToUpdate.description = task.description;
+    taskToUpdate.status = task.status;
+
+    this.dbService.getDatabase().write();
+
+    return taskToUpdate;
+  }
+
+  public deleteTask(id: string): Task | ErrorResponse {
+    const taskToDelete = this.dbService
+      .getDatabase()
+      .get('tasks')
+      .find({ id })
+      .value();
+
+    if (!taskToDelete) {
+      return {
+        success: false,
+        message: 'Task not found',
+      };
+    }
+
+    this.dbService.getDatabase().get('tasks').remove({ id }).write();
+
+    return taskToDelete;
   }
 }

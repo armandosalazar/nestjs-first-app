@@ -1,7 +1,7 @@
 export enum TaskStatus {
-  TODO = 'To do',
-  IN_PROGRESS = 'In progress',
-  DONE = 'Done',
+  TODO = 'to do',
+  IN_PROGRESS = 'in progress',
+  DONE = 'done',
 }
 
 export class Task {
