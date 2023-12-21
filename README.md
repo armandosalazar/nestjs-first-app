@@ -1,3 +1,6 @@
+# NestJS API REST
+Este proyecto es una API REST desarrollada con NestJS, que permite realizar operaciones CRUD sobre una base de datos en json utilizando lowdb.
+
 ## Running the app
 
 ```bash
