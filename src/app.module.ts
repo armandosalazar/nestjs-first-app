@@ -4,8 +4,8 @@ import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
 
 @Module({
-  imports: [TasksModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [TasksModule], // Permite importar otros módulos
+  controllers: [AppController], // Permite importar controladores: Se definen las rutas con las que cuenta este módulo.
+  providers: [AppService], // Permite importar servicios
 })
 export class AppModule {}
